@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Studio Vaulted - Desktop Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary-neon: #00f2ff;
+            --accent-purple: #1337ec;
+            --bg-dark: #0a0c14;
+            --sidebar-dark: #05060a;
+            --card-bg: #151926;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .neon-glow {
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+        .sidebar-item-active {
+            @apply border-r-2 border-[var(--primary-neon)] bg-white/5;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "studio-dark": "#0a0c14",
+                        "studio-card": "#151926",
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-slate-100 antialiased overflow-hidden">
+<div class="flex h-screen w-full">
+<aside class="w-20 md:w-64 flex flex-col bg-[var(--sidebar-dark)] border-r border-white/10 shrink-0">
+<div class="p-6 mb-4 flex items-center gap-3">
+<div class="bg-primary p-1.5 rounded-lg flex items-center justify-center neon-glow">
+<span class="material-symbols-outlined text-black font-bold text-xl">album</span>
+</div>
+<h1 class="hidden md:block text-xl font-black tracking-tighter italic uppercase text-white">Vaulted</h1>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-4 text-primary sidebar-item-active group transition-all" href="#">
+<span class="material-symbols-outlined transition-transform group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+<span class="hidden md:block font-bold">Projects</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all group" href="#">
+<span class="material-symbols-outlined transition-transform group-hover:scale-110">shelves</span>
+<span class="hidden md:block font-medium">Vault</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all group" href="#">
+<span class="material-symbols-outlined transition-transform group-hover:scale-110">audio_file</span>
+<span class="hidden md:block font-medium">Samples</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all group" href="#">
+<span class="material-symbols-outlined transition-transform group-hover:scale-110">monitoring</span>
+<span class="hidden md:block font-medium">Analytics</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-white/5">
+<a class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="hidden md:block font-medium">Settings</span>
+</a>
+<div class="hidden md:flex items-center gap-3 p-4 mt-2 bg-white/5 rounded-xl">
+<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent-purple"></div>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold truncate">Producer One</p>
+<p class="text-[10px] text-slate-500">Pro Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col bg-[var(--bg-dark)] overflow-hidden">
+<header class="flex flex-col md:flex-row items-center justify-between gap-4 p-6 border-b border-white/5 bg-studio-dark/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex-1 w-full max-w-2xl relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-studio-card border-none rounded-xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-primary/50 text-sm placeholder-slate-500 transition-all outline-none" placeholder="Search projects, BPM, or Key..." type="text"/>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<div class="hidden lg:flex items-center gap-2 px-2 border-r border-white/10 mr-2">
+<select class="bg-transparent border-none text-xs text-slate-400 focus:ring-0 cursor-pointer hover:text-white transition-colors">
+<option>Genre: All</option>
+<option>Techno</option>
+<option>House</option>
+<option>Trap</option>
+</select>
+<select class="bg-transparent border-none text-xs text-slate-400 focus:ring-0 cursor-pointer hover:text-white transition-colors">
+<option>BPM: All</option>
+<option>120-130</option>
+<option>140+</option>
+</select>
+</div>
+<button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-black font-black py-3 px-6 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20 flex-1 md:flex-none">
+<span class="material-symbols-outlined text-lg">add</span>
+<span class="uppercase tracking-tight text-xs">New Project</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-6 no-scrollbar">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-2xl font-black italic uppercase tracking-wider">Project Library</h2>
+<p class="text-slate-500 text-sm">You have 24 active projects in your workspace.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-primary bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-white/5 rounded-lg">
+<span class="material-symbols-outlined">list</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+<div class="group bg-studio-card rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all cursor-pointer">
+<div class="relative aspect-square overflow-hidden">
+<img alt="Project Art" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEwusOsaklTCY08_bOlu_6n88myWOSJzFkHN8T94ZU1ZNUsAWbtEvOFF-Wzls_g1drY3PzHQAQyu5KNViNyk08Vb5ln0bd5bommmhjVUMVsVbuejIsNAGPjLrcl_uPBCk5xoixjpJiYWJGO0izWCIyAUemLaUvI4r9nbKSomxWFoRlp6lz4EAoGI6FjMFFyjVIA5BhnDQE-83pUspEGPD7HcudV60_TdoRMhRGIY_9uCnWToNPJbHxcGmyYGtHswEBrdAjssxQ-fo"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-white text-black p-3 rounded-full scale-50 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined fill-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute top-3 right-3 bg-primary/90 text-black text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                                In Progress
+                            </div>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-base truncate group-hover:text-primary transition-colors">Midnight Echoes</h3>
+<span class="material-symbols-outlined text-slate-600 text-sm hover:text-white transition-colors">more_vert</span>
+</div>
+<div class="flex flex-wrap gap-2 text-[10px] font-bold text-slate-400 uppercase">
+<span class="bg-white/5 px-2 py-1 rounded">128 BPM</span>
+<span class="bg-white/5 px-2 py-1 rounded">Cm</span>
+<span class="bg-white/5 px-2 py-1 rounded text-primary">Techno</span>
+</div>
+<div class="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> 2h ago</span>
+<span>v1.4</span>
+</div>
+</div>
+</div>
+<div class="group bg-studio-card rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all cursor-pointer">
+<div class="relative aspect-square overflow-hidden">
+<img alt="Project Art" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARdAR2DaVN_tCysRuxa9U4RyovMvCvsP81kWLJ26a37KIWZC2BvBKauSwVGF_MyA62X8EjCyKq3QRzgkiHhtO8bfbGUm5fRKOPhcli2H3nfJNgjFk8jhiBQYGXeL73jgPb9IgMfuBBMl1WZuRLMHX-sUaKtofYWDiAvDATYEIqW-KYdywBcNAQg0ohDIpovnrzSk_DCXZAUk_WKO7s1OxnGdYRK8AUbaoBvRPcGTILS_PknvQdzajQexygM2mrW4Sr8UWTFweRFFE"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-white text-black p-3 rounded-full scale-50 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined fill-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                                Mastered
+                            </div>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-base truncate group-hover:text-primary transition-colors">Neon Horizon</h3>
+<span class="material-symbols-outlined text-slate-600 text-sm">more_vert</span>
+</div>
+<div class="flex flex-wrap gap-2 text-[10px] font-bold text-slate-400 uppercase">
+<span class="bg-white/5 px-2 py-1 rounded">124 BPM</span>
+<span class="bg-white/5 px-2 py-1 rounded">F#m</span>
+<span class="bg-white/5 px-2 py-1 rounded text-primary">Melodic</span>
+</div>
+<div class="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> Yesterday</span>
+<span>Final</span>
+</div>
+</div>
+</div>
+<div class="group bg-studio-card rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all cursor-pointer">
+<div class="relative aspect-square overflow-hidden bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/20 text-6xl">graphic_eq</span>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-white text-black p-3 rounded-full scale-50 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined fill-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute top-3 right-3 bg-amber-500 text-black text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                                Idea
+                            </div>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-base truncate group-hover:text-primary transition-colors">Subterranean Loop</h3>
+<span class="material-symbols-outlined text-slate-600 text-sm">more_vert</span>
+</div>
+<div class="flex flex-wrap gap-2 text-[10px] font-bold text-slate-400 uppercase">
+<span class="bg-white/5 px-2 py-1 rounded">140 BPM</span>
+<span class="bg-white/5 px-2 py-1 rounded">Am</span>
+<span class="bg-white/5 px-2 py-1 rounded text-primary">DNB</span>
+</div>
+<div class="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> 3 days ago</span>
+<span>v0.1</span>
+</div>
+</div>
+</div>
+<div class="group bg-studio-card rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all cursor-pointer">
+<div class="relative aspect-square overflow-hidden">
+<img alt="Project Art" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ipBfDv5M09KMkcfkqqskwU2nyQXyBhob8Ell5zjYBGxKIlNhCqmvtvwDiRDCHb84h3gIlabzg888kzFaxY0CcgAWzKbRJKClzMjWx1M8CV79jlDH4C1Vw2xOikYd_-ugnU9FdQIj2Amxo8zguVrjkRbbYsHOonAYaeImu4mZCvHTpWoMFb4B7XlwEarCgO75WmkjnKxu2v6Fraj3NxeQFCBNydVUdfk23gP6HNPuThZBn2Q2wATZHnNCWqiwswLiLKBublwgAhI"/>
+<div class="absolute top-3 right-3 bg-primary/90 text-black text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                                In Progress
+                            </div>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-base truncate group-hover:text-primary transition-colors">Cyberpunk Soul</h3>
+<span class="material-symbols-outlined text-slate-600 text-sm">more_vert</span>
+</div>
+<div class="flex flex-wrap gap-2 text-[10px] font-bold text-slate-400 uppercase">
+<span class="bg-white/5 px-2 py-1 rounded">105 BPM</span>
+<span class="bg-white/5 px-2 py-1 rounded">Em</span>
+<span class="bg-white/5 px-2 py-1 rounded text-primary">Future</span>
+</div>
+<div class="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> Oct 24</span>
+<span>v2.1</span>
+</div>
+</div>
+</div>
+<div class="group bg-studio-dark rounded-2xl border-2 border-dashed border-white/10 hover:border-primary/50 flex flex-col items-center justify-center p-8 transition-all cursor-pointer gap-4">
+<div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<div class="text-center">
+<p class="font-bold text-sm">Start Fresh</p>
+<p class="text-xs text-slate-500">Empty template</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
