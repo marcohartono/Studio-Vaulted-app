@@ -3,6 +3,7 @@ import type { DragEvent, MouseEvent } from 'react'
 import './App.css'
 import logo from './assets/Studio-vaulted-icon-1.png'
 import { useSettings } from './hooks/useSettings'
+import { useLicense } from './hooks/useLicense'
 import { getScanErrorMessage, useProjectScan } from './hooks/useProjectScan'
 import { ProjectRootSettingCard } from './components/settings/ProjectRootSettingCard'
 import { ScanOptionsCard } from './components/settings/ScanOptionsCard'
@@ -119,6 +120,7 @@ function App() {
   })
   const bpmDebugDone = useRef(false)
 
+  useLicense()
   const hasBridge = typeof window !== 'undefined' && Boolean(window.studioVaulted)
   const hasSettingsBridge = typeof window !== 'undefined' && Boolean(window.settings && window.projects)
   const {
@@ -1607,6 +1609,7 @@ function App() {
           }}
           submitting={isCreatingProject}
           error={projectCreateError}
+          canUseTemplates={true}
         />
       )}
       {versionModal && (

@@ -2,10 +2,11 @@ type CreationMode = 'blank' | 'template'
 
 type CreationModeToggleProps = {
   value: CreationMode
+  canUseTemplates: boolean
   onChange: (mode: CreationMode) => void
 }
 
-export function CreationModeToggle({ value, onChange }: CreationModeToggleProps) {
+export function CreationModeToggle({ value, canUseTemplates, onChange }: CreationModeToggleProps) {
   return (
     <div className="creation-mode-toggle" role="tablist" aria-label="Creation mode">
       <button
@@ -21,10 +22,12 @@ export function CreationModeToggle({ value, onChange }: CreationModeToggleProps)
         type="button"
         role="tab"
         aria-selected={value === 'template'}
-        className={value === 'template' ? 'active' : ''}
+        className={`${value === 'template' ? 'active' : ''} ${!canUseTemplates ? 'locked' : ''}`}
+        disabled={!canUseTemplates}
+        title={!canUseTemplates ? 'Templates require a license' : undefined}
         onClick={() => onChange('template')}
       >
-        Create from Template
+        Create from Template {!canUseTemplates && '🔒'}
       </button>
     </div>
   )

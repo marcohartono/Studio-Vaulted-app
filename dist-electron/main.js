@@ -106,6 +106,110 @@ async function buildHit(entryPath, entryName, ext) {
     return null;
   }
 }
+const VERSION_REGEX = /^(.*?)[\s_-]*\[(\d{4})\s(\d{2})\s(\d{2})\s(\d{6})\]\.als$/i;
+function parseAbletonVersionFile(filePath) {
+  const fileName = path.basename(filePath);
+  const match = fileName.match(VERSION_REGEX);
+  if (!match) return null;
+  const baseName = match[1].trim();
+  const year = Number(match[2]);
+  const month = Number(match[3]);
+  const day = Number(match[4]);
+  const time = match[5];
+  if (!baseName || time.length !== 6) return null;
+  const hour = Number(time.slice(0, 2));
+  const minute = Number(time.slice(2, 4));
+  const second = Number(time.slice(4, 6));
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day) || !Number.isFinite(hour) || !Number.isFinite(minute) || !Number.isFinite(second)) {
+    return null;
+  }
+  const versionTimestampMs = new Date(year, month - 1, day, hour, minute, second).getTime();
+  if (!Number.isFinite(versionTimestampMs)) return null;
+  return { baseName, versionTimestampMs };
+}
+function parseFlpVersionFile(filePath) {
+  const fileName = path.basename(filePath);
+  const match = fileName.match(/^(.*)\s\(([^)]+)\)\.flp$/i);
+  if (!match) return null;
+  const suffix = match[2].toLowerCase();
+  if (suffix.includes("overwritten") || suffix.includes("autosaved")) {
+    return null;
+  }
+  const baseName = match[1].trim();
+  if (!baseName) return null;
+  return { baseName };
+}
+function normalizeTrackName(name) {
+  let cleaned = name.toLowerCase().trim();
+  cleaned = cleaned.replace(/[_\-.]+/g, " ");
+  cleaned = cleaned.replace(/\s+/g, " ").trim();
+  const suffixPatterns = [
+    /\b(v|ver|version|rev|r)\s?\d+\b$/i,
+    /\bfinal\s?\d*\b$/i,
+    /\bcopy\s?\d*\b$/i,
+    /\bduplicate\s?\d*\b$/i,
+    /\(\s*copy\s*\d*\s*\)$/i,
+    /\[\s*\d{4}[-_/ ]\d{1,2}[-_/ ]\d{1,2}\s*\]$/i,
+    /\[\s*\d{1,2}[-_/ ]\d{1,2}[-_/ ]\d{2,4}\s*\]$/i,
+    /\[\s*\d{4}\s\d{2}\s\d{2}\s\d{6}\s*\]$/i,
+    /\b\d{4}[-_]\d{1,2}[-_]\d{1,2}\b$/i,
+    /\b\d{1,2}[-_]\d{1,2}[-_]\d{2,4}\b$/i
+  ];
+  let stripped = cleaned;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const pattern of suffixPatterns) {
+      const next = stripped.replace(pattern, "").trim();
+      if (next !== stripped) {
+        stripped = next;
+        changed = true;
+      }
+    }
+    stripped = stripped.replace(/\s+/g, " ").trim();
+  }
+  return stripped;
+}
+function computeGroupKey(filePath) {
+  const parentDir = path.dirname(filePath);
+  const parsedAls = parseAbletonVersionFile(filePath);
+  const parsedFlp = parseFlpVersionFile(filePath);
+  const baseName = parsedAls ? parsedAls.baseName : parsedFlp ? parsedFlp.baseName : path.basename(filePath, path.extname(filePath));
+  const normalized = normalizeTrackName(baseName);
+  return `${parentDir}::${normalized}`;
+}
+function computeDisplayTitle(filePath) {
+  const parsedAls = parseAbletonVersionFile(filePath);
+  const parsedFlp = parseFlpVersionFile(filePath);
+  const baseName = parsedAls ? parsedAls.baseName : parsedFlp ? parsedFlp.baseName : path.basename(filePath, path.extname(filePath));
+  const cleaned = baseName.replace(/[_\-.]+/g, " ").replace(/\s+/g, " ").trim();
+  const suffixPatterns = [
+    /\b(v|ver|version|rev|r)\s?\d+\b$/i,
+    /\bfinal\s?\d*\b$/i,
+    /\bcopy\s?\d*\b$/i,
+    /\bduplicate\s?\d*\b$/i,
+    /\(\s*copy\s*\d*\s*\)$/i,
+    /\[\s*\d{4}[-_/ ]\d{1,2}[-_/ ]\d{1,2}\s*\]$/i,
+    /\[\s*\d{1,2}[-_/ ]\d{1,2}[-_/ ]\d{2,4}\s*\]$/i,
+    /\[\s*\d{4}\s\d{2}\s\d{2}\s\d{6}\s*\]$/i,
+    /\b\d{4}[-_]\d{1,2}[-_]\d{1,2}\b$/i,
+    /\b\d{1,2}[-_]\d{1,2}[-_]\d{2,4}\b$/i
+  ];
+  let stripped = cleaned;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const pattern of suffixPatterns) {
+      const next = stripped.replace(pattern, "").trim();
+      if (next !== stripped) {
+        stripped = next;
+        changed = true;
+      }
+    }
+    stripped = stripped.replace(/\s+/g, " ").trim();
+  }
+  return stripped || cleaned || baseName;
+}
 const IGNORED_DIRS$1 = /* @__PURE__ */ new Set([
   "node_modules",
   ".git",
@@ -450,110 +554,6 @@ async function discoverTemplates(settings) {
     }
   }
   return sortTemplates(Array.from(byPath.values()), settings.recentTemplatePaths);
-}
-const VERSION_REGEX = /^(.*?)[\s_-]*\[(\d{4})\s(\d{2})\s(\d{2})\s(\d{6})\]\.als$/i;
-function parseAbletonVersionFile(filePath) {
-  const fileName = path.basename(filePath);
-  const match = fileName.match(VERSION_REGEX);
-  if (!match) return null;
-  const baseName = match[1].trim();
-  const year = Number(match[2]);
-  const month = Number(match[3]);
-  const day = Number(match[4]);
-  const time = match[5];
-  if (!baseName || time.length !== 6) return null;
-  const hour = Number(time.slice(0, 2));
-  const minute = Number(time.slice(2, 4));
-  const second = Number(time.slice(4, 6));
-  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day) || !Number.isFinite(hour) || !Number.isFinite(minute) || !Number.isFinite(second)) {
-    return null;
-  }
-  const versionTimestampMs = new Date(year, month - 1, day, hour, minute, second).getTime();
-  if (!Number.isFinite(versionTimestampMs)) return null;
-  return { baseName, versionTimestampMs };
-}
-function parseFlpVersionFile(filePath) {
-  const fileName = path.basename(filePath);
-  const match = fileName.match(/^(.*)\s\(([^)]+)\)\.flp$/i);
-  if (!match) return null;
-  const suffix = match[2].toLowerCase();
-  if (suffix.includes("overwritten") || suffix.includes("autosaved")) {
-    return null;
-  }
-  const baseName = match[1].trim();
-  if (!baseName) return null;
-  return { baseName };
-}
-function normalizeTrackName(name) {
-  let cleaned = name.toLowerCase().trim();
-  cleaned = cleaned.replace(/[_\-.]+/g, " ");
-  cleaned = cleaned.replace(/\s+/g, " ").trim();
-  const suffixPatterns = [
-    /\b(v|ver|version|rev|r)\s?\d+\b$/i,
-    /\bfinal\s?\d*\b$/i,
-    /\bcopy\s?\d*\b$/i,
-    /\bduplicate\s?\d*\b$/i,
-    /\(\s*copy\s*\d*\s*\)$/i,
-    /\[\s*\d{4}[-_/ ]\d{1,2}[-_/ ]\d{1,2}\s*\]$/i,
-    /\[\s*\d{1,2}[-_/ ]\d{1,2}[-_/ ]\d{2,4}\s*\]$/i,
-    /\[\s*\d{4}\s\d{2}\s\d{2}\s\d{6}\s*\]$/i,
-    /\b\d{4}[-_]\d{1,2}[-_]\d{1,2}\b$/i,
-    /\b\d{1,2}[-_]\d{1,2}[-_]\d{2,4}\b$/i
-  ];
-  let stripped = cleaned;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const pattern of suffixPatterns) {
-      const next = stripped.replace(pattern, "").trim();
-      if (next !== stripped) {
-        stripped = next;
-        changed = true;
-      }
-    }
-    stripped = stripped.replace(/\s+/g, " ").trim();
-  }
-  return stripped;
-}
-function computeGroupKey(filePath) {
-  const parentDir = path.dirname(filePath);
-  const parsedAls = parseAbletonVersionFile(filePath);
-  const parsedFlp = parseFlpVersionFile(filePath);
-  const baseName = parsedAls ? parsedAls.baseName : parsedFlp ? parsedFlp.baseName : path.basename(filePath, path.extname(filePath));
-  const normalized = normalizeTrackName(baseName);
-  return `${parentDir}::${normalized}`;
-}
-function computeDisplayTitle(filePath) {
-  const parsedAls = parseAbletonVersionFile(filePath);
-  const parsedFlp = parseFlpVersionFile(filePath);
-  const baseName = parsedAls ? parsedAls.baseName : parsedFlp ? parsedFlp.baseName : path.basename(filePath, path.extname(filePath));
-  const cleaned = baseName.replace(/[_\-.]+/g, " ").replace(/\s+/g, " ").trim();
-  const suffixPatterns = [
-    /\b(v|ver|version|rev|r)\s?\d+\b$/i,
-    /\bfinal\s?\d*\b$/i,
-    /\bcopy\s?\d*\b$/i,
-    /\bduplicate\s?\d*\b$/i,
-    /\(\s*copy\s*\d*\s*\)$/i,
-    /\[\s*\d{4}[-_/ ]\d{1,2}[-_/ ]\d{1,2}\s*\]$/i,
-    /\[\s*\d{1,2}[-_/ ]\d{1,2}[-_/ ]\d{2,4}\s*\]$/i,
-    /\[\s*\d{4}\s\d{2}\s\d{2}\s\d{6}\s*\]$/i,
-    /\b\d{4}[-_]\d{1,2}[-_]\d{1,2}\b$/i,
-    /\b\d{1,2}[-_]\d{1,2}[-_]\d{2,4}\b$/i
-  ];
-  let stripped = cleaned;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const pattern of suffixPatterns) {
-      const next = stripped.replace(pattern, "").trim();
-      if (next !== stripped) {
-        stripped = next;
-        changed = true;
-      }
-    }
-    stripped = stripped.replace(/\s+/g, " ").trim();
-  }
-  return stripped || cleaned || baseName;
 }
 let db = null;
 let initPromise = null;
@@ -3145,9 +3145,13 @@ async function rebuildTracksFromVersions() {
       try {
         const usedTrackIds = /* @__PURE__ */ new Set();
         for (const [groupKey, groupVersions] of grouped.entries()) {
-          const sorted = [...groupVersions].sort(
-            (a, b) => Number(b.saved_at) - Number(a.saved_at)
-          );
+          const sorted = [...groupVersions].sort((a, b) => {
+            const aIsBackup = parseAbletonVersionFile(a.file_path) !== null;
+            const bIsBackup = parseAbletonVersionFile(b.file_path) !== null;
+            if (!aIsBackup && bIsBackup) return -1;
+            if (aIsBackup && !bIsBackup) return 1;
+            return Number(b.saved_at) - Number(a.saved_at);
+          });
           const latest = sorted[0];
           const latestFilePathRaw = latest.file_path;
           if (typeof latestFilePathRaw !== "string" || latestFilePathRaw.trim().length === 0) {
@@ -3870,6 +3874,12 @@ async function activateLicense(key) {
   } catch {
     return { success: false, error: "Could not identify this machine. Please try again." };
   }
+  if (process.env.NODE_ENV === "development") {
+    await saveLicense({ key: normalized, token: "dev-token", machineId, lastVerifiedAt: Date.now() });
+    currentPlan = "paid";
+    activatedKey = normalized;
+    return { success: true };
+  }
   try {
     const result = await apiActivate(normalized, machineId);
     if (!result.success || !result.token) {
@@ -4430,7 +4440,15 @@ ipcMain.handle("setTrackAudioPath", async (_event, id, audioPath) => {
 });
 ipcMain.handle("openProjectPath", async (_event, filePath) => {
   if (!filePath) return { ok: false };
-  const result = await shell.openPath(filePath);
+  const parsed = parseAbletonVersionFile(filePath);
+  let targetPath = filePath;
+  if (parsed) {
+    const canonical = path.join(path.dirname(filePath), `${parsed.baseName}.als`);
+    if (existsSync(canonical)) {
+      targetPath = canonical;
+    }
+  }
+  const result = await shell.openPath(targetPath);
   return { ok: result === "", error: result || null };
 });
 ipcMain.handle("revealProjectPath", async (_event, filePath) => {

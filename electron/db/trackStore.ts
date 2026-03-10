@@ -653,9 +653,14 @@ async function rebuildTracksFromVersions(): Promise<void> {
         const usedTrackIds = new Set<string>()
 
         for (const [groupKey, groupVersions] of grouped.entries()) {
-          const sorted = [...groupVersions].sort(
-            (a, b) => Number(b.saved_at) - Number(a.saved_at),
-          )
+          const sorted = [...groupVersions].sort((a, b) => {
+            const aIsBackup = parseAbletonVersionFile(a.file_path as string) !== null
+            const bIsBackup = parseAbletonVersionFile(b.file_path as string) !== null
+            // Always prefer the non-timestamped main file over Ableton backup copies
+            if (!aIsBackup && bIsBackup) return -1
+            if (aIsBackup && !bIsBackup) return 1
+            return Number(b.saved_at) - Number(a.saved_at)
+          })
           const latest = sorted[0]
           const latestFilePathRaw = latest.file_path
           if (typeof latestFilePathRaw !== 'string' || latestFilePathRaw.trim().length === 0) {

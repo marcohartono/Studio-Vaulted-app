@@ -35,6 +35,7 @@ type StartNewProjectModalProps = {
   onOpenSettings: () => void
   submitting: boolean
   error: string | null
+  canUseTemplates: boolean
 }
 
 const DAW_FORMAT_OPTIONS = [
@@ -58,6 +59,7 @@ export function StartNewProjectModal({
   onOpenSettings,
   submitting,
   error,
+  canUseTemplates,
 }: StartNewProjectModalProps) {
   const [templateQuery, setTemplateQuery] = useState('')
 
@@ -86,6 +88,7 @@ export function StartNewProjectModal({
 
         <CreationModeToggle
           value={value.creationMode}
+          canUseTemplates={canUseTemplates}
           onChange={(creationMode) => {
             const nextFormat = creationMode === 'template' ? 'als' : value.dawFormat
             onChange({ ...value, creationMode, dawFormat: nextFormat })

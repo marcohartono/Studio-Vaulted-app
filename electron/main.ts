@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { promises as fs, existsSync } from 'node:fs'
 import { scanForProjects } from './scan/scanForProjects'
+import { parseAbletonVersionFile } from './scan/trackGrouping'
 import { scanAbletonProjects } from './services/projectScanner'
 import { getSettings, updateSettings, type AppSettings } from './services/settingsStore'
 import { discoverTemplates } from './services/templateDiscovery'
@@ -700,7 +701,19 @@ ipcMain.handle('setTrackAudioPath', async (_event, id: string, audioPath: string
 
 ipcMain.handle('openProjectPath', async (_event, filePath: string) => {
   if (!filePath) return { ok: false }
-  const result = await shell.openPath(filePath)
+
+  // If the stored path is an Ableton timestamped backup, resolve to the canonical main file.
+  // e.g. "MySong [2026 03 10 120000].als" → "MySong.als"
+  const parsed = parseAbletonVersionFile(filePath)
+  let targetPath = filePath
+  if (parsed) {
+    const canonical = path.join(path.dirname(filePath), `${parsed.baseName}.als`)
+    if (existsSync(canonical)) {
+      targetPath = canonical
+    }
+  }
+
+  const result = await shell.openPath(targetPath)
   return { ok: result === '', error: result || null }
 })
 

@@ -116,6 +116,14 @@ export async function activateLicense(key: string): Promise<ActivationResult> {
     return { success: false, error: 'Could not identify this machine. Please try again.' }
   }
 
+  // DEV BYPASS: skip server activation
+  if (process.env.NODE_ENV === 'development') {
+    await saveLicense({ key: normalized, token: 'dev-token', machineId, lastVerifiedAt: Date.now() })
+    currentPlan = 'paid'
+    activatedKey = normalized
+    return { success: true }
+  }
+
   try {
     const result = await apiActivate(normalized, machineId)
     if (!result.success || !result.token) {
