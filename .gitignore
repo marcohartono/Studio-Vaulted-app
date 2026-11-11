@@ -23,3 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 release/
+
+# Build output
+dist-electron/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Env files (keep the examples)
+.env
+.env.*
+!.env.example

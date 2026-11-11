@@ -5,8 +5,9 @@ import { db } from './db.js'
 const SERVER_SECRET = process.env.LICENSE_SERVER_SECRET
 if (!SERVER_SECRET) throw new Error('LICENSE_SERVER_SECRET env var is required')
 
-// Must match the client's APP_SECRET — used only to validate key format
-const APP_SECRET = process.env.APP_SECRET ?? 'sv-2025-k9x#mLp!qR7nWz'
+// Signs license keys — must match the secret used by scripts/generate-key.ts. Never ship it in the app.
+const APP_SECRET = process.env.APP_SECRET
+if (!APP_SECRET) throw new Error('APP_SECRET env var is required')
 const LICENSE_KEY_REGEX = /^SVL-[0-9A-F]{8}-[0-9A-F]{8}$/
 const PORT = Number(process.env.PORT ?? 3001)
 
@@ -20,7 +21,7 @@ function validateKeyHmac(normalizedKey: string): boolean {
   if (parts.length !== 3) return false
   const [, nonce, sig] = parts
   const expected = crypto
-    .createHmac('sha256', APP_SECRET)
+    .createHmac('sha256', APP_SECRET!)
     .update(nonce)
     .digest('hex')
     .substring(0, 8)

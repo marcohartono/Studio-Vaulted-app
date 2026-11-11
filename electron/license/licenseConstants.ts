@@ -32,12 +32,8 @@ export const PLANS: Record<Plan, PlanDefinition> = {
 
 // Key format: SVL-XXXXXXXX-YYYYYYYY
 // XXXXXXXX = 8 hex char nonce
-// YYYYYYYY = 8 hex char HMAC-SHA256(APP_SECRET, nonce) prefix
+// YYYYYYYY = 8 hex char HMAC-SHA256 signature, checked only by the license server
 export const LICENSE_KEY_REGEX = /^SVL-[0-9A-F]{8}-[0-9A-F]{8}$/
-
-// Used for offline key-format validation only — not the real security mechanism.
-// Must match APP_SECRET in the license server environment.
-export const APP_SECRET = 'sv-2025-k9x#mLp!qR7nWz'
 
 // License activation server base URL (no trailing slash)
 export const LICENSE_SERVER_URL =

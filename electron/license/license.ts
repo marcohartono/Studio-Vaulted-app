@@ -1,6 +1,4 @@
-import crypto from 'node:crypto'
 import {
-  APP_SECRET,
   LICENSE_KEY_REGEX,
   OFFLINE_GRACE_MS,
   PLANS,
@@ -37,20 +35,6 @@ function validateKeyFormat(key: string): boolean {
   return LICENSE_KEY_REGEX.test(key.trim().toUpperCase())
 }
 
-function validateKeySignature(key: string): boolean {
-  const normalized = key.trim().toUpperCase()
-  const parts = normalized.split('-')
-  if (parts.length !== 3) return false
-  const [, nonce, sig] = parts
-  const expected = crypto
-    .createHmac('sha256', APP_SECRET)
-    .update(nonce)
-    .digest('hex')
-    .substring(0, 8)
-    .toUpperCase()
-  return sig === expected
-}
-
 export async function initLicense(): Promise<void> {
   const stored = await loadLicense()
 
@@ -61,7 +45,7 @@ export async function initLicense(): Promise<void> {
   }
 
   // Sanity-check stored key before trusting it
-  if (!validateKeyFormat(stored.key) || !validateKeySignature(stored.key)) {
+  if (!validateKeyFormat(stored.key)) {
     currentPlan = 'free'
     activatedKey = null
     await clearLicense()
@@ -103,10 +87,6 @@ export async function activateLicense(key: string): Promise<ActivationResult> {
 
   if (!validateKeyFormat(normalized)) {
     return { success: false, error: 'Invalid key format. Expected SVL-XXXXXXXX-YYYYYYYY.' }
-  }
-
-  if (!validateKeySignature(normalized)) {
-    return { success: false, error: 'License key is not valid.' }
   }
 
   let machineId: string

@@ -8,7 +8,8 @@
  */
 import crypto from 'node:crypto'
 
-const APP_SECRET = process.env.APP_SECRET ?? 'sv-2025-k9x#mLp!qR7nWz'
+const APP_SECRET = process.env.APP_SECRET
+if (!APP_SECRET) throw new Error('APP_SECRET env var is required')
 const count = Number(process.argv[2] ?? 1)
 
 for (let i = 0; i < count; i++) {

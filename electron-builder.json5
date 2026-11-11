@@ -13,6 +13,15 @@
   ],
   "mac": {
     "icon": "build/icons/icon.icns",
+    "category": "public.app-category.music",
+    "identity": "MARCO KRISNA HARTONO (FWFV7X6PMJ)",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "entitlements.mac.plist",
+    "entitlementsInherit": "entitlements.mac.plist",
+    "notarize": {
+      "teamId": "FWFV7X6PMJ"
+    },
     "target": [
       "dmg"
     ],
